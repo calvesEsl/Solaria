@@ -1,0 +1,6 @@
+pt-BR:
+  activerecord:
+    models:
+      person:
+        one: Pessoa
+        other: Pessoas
