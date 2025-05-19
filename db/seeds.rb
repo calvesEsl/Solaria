@@ -1,9 +1,39 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+require 'csv'
+
+puts "Limpando dados..."
+City.delete_all
+State.delete_all
+
+puts "Importando Estados..."
+states = {}
+CSV.foreach(Rails.root.join('db/csv/estados.csv'), headers: true) do |row|
+  state = State.create!(
+    code: row['codigo_uf'],
+    acronym: row['uf'],
+    name: row['nome'],
+    region: row['regiao'],
+    latitude: row['latitude'],
+    longitude: row['longitude']
+  )
+  states[row['codigo_uf']] = state
+end
+
+puts "Importando Cidades..."
+CSV.foreach(Rails.root.join('db/csv/municipios.csv'), headers: true) do |row|
+  state = states[row['codigo_uf']]
+  next unless state
+
+  City.create!(
+    code_ibge: row['codigo_ibge'],
+    name: row['nome'],
+    latitude: row['latitude'],
+    longitude: row['longitude'],
+    capital: row['capital'] == '1',
+    siafi_id: row['siafi_id'],
+    ddd: row['ddd'],
+    timezone: row['fuso_horario'],
+    state: state
+  )
+end
+
+puts "✅ Dados importados com sucesso!"

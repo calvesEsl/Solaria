@@ -1,11 +1,19 @@
 doctype html
 html
   head
-    title Farmácia
+    title Solaria
     = csrf_meta_tags
     = csp_meta_tag
     = stylesheet_link_tag "application", media: "all"
     = javascript_include_tag "application"
+    = javascript_include_tag "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js", defer: true
   body
-    = yield
-    = yield :javascripts
+    = render 'shared/navbar'
+    .container.mt-3
+      - if notice
+        .alert.alert-success= notice
+      - if alert
+        .alert.alert-danger= alert
+
+      = yield
+      = yield :javascripts

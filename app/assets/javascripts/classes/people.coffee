@@ -2,7 +2,6 @@ window.People ||= {}
 
 class People.Index
   constructor: (id) ->
-    console.log 'Vue iniciado via CoffeeScript'
     @vm = new Vue
       el: id
       data:

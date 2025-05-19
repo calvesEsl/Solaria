@@ -1,0 +1,67 @@
+nav.navbar.navbar-expand-lg.navbar-custom
+  .container-fluid
+    = link_to root_path, class: "navbar-brand fw-bold text-white d-flex align-items-center gap-2" do
+      .icon-wrapper
+        i#solaria-icon.fas.fa-bolt.fade-icon
+      | Solaria
+
+
+    button.navbar-toggler(type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent")
+      span.navbar-toggler-icon
+
+    .collapse.navbar-collapse#navbarSupportedContent
+      ul.navbar-nav.me-auto.mb-2.mb-lg-0
+        li.nav-item
+          = link_to "Simulador", about_path, class: "nav-link"
+
+        li.nav-item.disabled
+          span.nav-link.text-white.opacity-75 &VerticalBar;
+
+        li.nav-item.dropdown
+          a.nav-link.dropdown-toggle(href="#" id="cadastrosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false") Cadastros
+          ul.dropdown-menu(aria-labelledby="cadastrosDropdown")
+            li = link_to "Pessoas Físicas", people_path(type: "fisica"), class: "dropdown-item"
+            li = link_to "Pessoas Jurídicas", people_path(type: "juridica"), class: "dropdown-item"
+
+        li.nav-item.disabled
+          span.nav-link.text-white.opacity-75 &VerticalBar;
+
+        li.nav-item
+          = link_to "Fontes de Energia", energies_path, class: "nav-link"
+
+        li.nav-item.disabled
+          span.nav-link.text-white.opacity-75 &VerticalBar;
+
+        li.nav-item
+          = link_to "Relatórios", reports_path, class: "nav-link"
+
+      ul.navbar-nav.ms-auto
+        li.nav-item.dropdown
+          a.nav-link.dropdown-toggle(href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false") Minha Conta
+          ul.dropdown-menu(aria-labelledby="accountDropdown")
+            li = link_to "Perfil", edit_user_registration_path, class: "dropdown-item"
+            li = link_to "Preferências", "#", class: "dropdown-item"
+
+        li.nav-item.disabled
+          span.nav-link.text-white.opacity-75 &VerticalBar;
+
+        li.nav-item
+          = link_to "Sair", destroy_user_session_path, method: :delete, class: "nav-link text-white fw-bold"
+
+javascript:
+  document.addEventListener("DOMContentLoaded", function () {
+    const iconElement = document.getElementById("solaria-icon");
+    const icons = ["fa-bolt", "fa-solar-panel", "fa-wind"];
+    let index = 0;
+
+    setInterval(() => {
+      iconElement.classList.add("fade-out");
+
+      setTimeout(() => {
+        iconElement.classList.remove(icons[index]);
+        index = (index + 1) % icons.length;
+        iconElement.classList.add(icons[index]);
+        iconElement.classList.remove("fade-out");
+      }, 500); // tempo da transição
+    }, 4000);
+  });
