@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_18_050024) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_26_004217) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -29,12 +29,42 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_18_050024) do
     t.index ["state_id"], name: "index_cities_on_state_id"
   end
 
+  create_table "energy_companies", force: :cascade do |t|
+    t.string "name", null: false
+    t.decimal "price_per_kwh", precision: 6, scale: 4
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "people", force: :cascade do |t|
     t.string "name"
     t.string "email"
     t.string "phone"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "city_id"
+    t.string "cpf"
+    t.string "cnpj"
+    t.string "endereco"
+    t.decimal "calculation_area", precision: 10, scale: 2
+    t.string "type"
+    t.index ["city_id"], name: "index_people_on_city_id"
+  end
+
+  create_table "simulations", force: :cascade do |t|
+    t.bigint "city_id", null: false
+    t.bigint "energy_company_id", null: false
+    t.decimal "area_available", precision: 10, scale: 2
+    t.boolean "simulate_solar_batch", default: false
+    t.boolean "simulate_wind_batch", default: false
+    t.decimal "estimated_consumption_kwh_year", precision: 10, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.json "solar_raw_data"
+    t.integer "panel_quantity"
+    t.integer "turbine_quantity"
+    t.index ["city_id"], name: "index_simulations_on_city_id"
+    t.index ["energy_company_id"], name: "index_simulations_on_energy_company_id"
   end
 
   create_table "states", force: :cascade do |t|
@@ -62,4 +92,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_18_050024) do
   end
 
   add_foreign_key "cities", "states"
+  add_foreign_key "people", "cities"
+  add_foreign_key "simulations", "cities"
+  add_foreign_key "simulations", "energy_companies"
 end

@@ -1,0 +1,16 @@
+= content_for :javascripts do
+  javascript:
+    var vueForm;
+    document.addEventListener('DOMContentLoaded', function() {
+      vueForm = new Individual.Index('#individual-index');
+    });
+
+#individual-index.container-index v-cloak="true"
+  .d-flex.justify-content-between.align-items-center.mb-3
+    h4.mb-0.text-dark Pessoa Física
+    = link_to '+ Nova pessoa física', new_individual_path, class: 'btn btn-orange-pill btn-sm shadow-sm'
+
+  .filter-wrapper.shadow-sm.bg-white.rounded.p-3.mb-4
+    = render partial: 'individuals/filters'
+
+= modern_paginated_table(@individuals, headers: ['Nome', 'Email', 'CPF'], fields: [:name, :email, :cpf], actions: individual_actions_helper)

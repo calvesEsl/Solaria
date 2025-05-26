@@ -1,6 +1,11 @@
 pt-BR:
   activerecord:
     models:
-      person:
-        one: Pessoa
-        other: Pessoas
+      company:
+        one: Empresa
+        other: Empresas
+      individual:
+        one: Pessoa Física
+        other: Pessoas Físicas
+  helpers:
+    new: "Novo"

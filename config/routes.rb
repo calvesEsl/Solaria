@@ -7,9 +7,12 @@ Rails.application.routes.draw do
   get 'energies', to: 'home#energies'
   get 'reports', to: 'home#reports'
 
-
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Define other routes if needed
   resources :people
+  resources :individuals
+  resources :companies
+  resources :cities, only: [:index]
+  resources :simulations
 end

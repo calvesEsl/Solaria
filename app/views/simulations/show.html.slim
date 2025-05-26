@@ -1,0 +1,20 @@
+h2 Resultado da Simulação
+
+.card.mb-3
+  .card-header.bg-warning.text-white Energia Solar
+  .card-body
+    p Placas: #{@result[:solar][:panels]}
+    p Geração anual: #{@result[:solar][:annual_generation_kwh]} kWh
+    p Economia estimada: R$ #{@result[:solar][:estimated_savings]}
+
+.card.mb-3
+  .card-header.bg-info.text-white Energia Eólica
+  .card-body
+    p Turbinas: #{@result[:wind][:turbines]}
+    p Geração anual: #{@result[:wind][:annual_generation_kwh]} kWh
+    p Economia estimada: R$ #{@result[:wind][:estimated_savings]}
+
+.alert.alert-success.mt-4
+  strong Melhor opção: #{@result[:better_option]}
+
+= link_to 'Nova Simulação', new_simulation_path, class: 'btn btn-outline-secondary mt-3'

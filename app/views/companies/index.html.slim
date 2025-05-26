@@ -1,0 +1,22 @@
+= content_for :javascripts do
+  javascript:
+    var vueForm;
+    document.addEventListener('DOMContentLoaded', function() {
+      vueForm = new Company.Index('#company-index');
+    });
+
+#company-index.container-index v-cloak="true"
+  = index_header Company, new_company_path
+
+  = form_with url: companies_path, method: :get, local: true do |f|
+    .row.mb-3
+      .col-md-4
+        = f.label :name, 'Nome'
+        = f.text_field :name, class: 'form-control'
+      .col-md-4.mt-auto
+        = f.submit 'Buscar', class: 'btn btn-orange mt-4'
+
+  p v-if="filtersEnabled" class="text-info mt-2" Filtros ativados!
+  button.btn.btn-outline-secondary.mb-3 @click="toggleFilters" Alternar filtros
+
+= paginated_table @companies, headers: company_index_headers, fields: company_index_fields, actions: company_index_actions

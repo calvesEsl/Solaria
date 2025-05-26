@@ -28,6 +28,8 @@ gem 'kaminari'
 
 gem 'devise'
 
+gem 'kaminari-bootstrap'
+
 require 'debug'
 
 # Use Redis adapter to run Action Cable in production

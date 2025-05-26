@@ -1,0 +1,39 @@
+= content_for :javascripts do
+  javascript:
+    document.addEventListener('DOMContentLoaded', function() {
+      new Simulation.Form('#simulation-form')
+    })
+
+h1 Nova Simulação
+
+#simulation-form
+  = form_with model: @simulation, local: true do |f|
+    .mb-2 = f.label :city_id, 'Cidade'
+    = f.collection_select :city_id, City.all, :id, :name, prompt: 'Selecione', class: 'form-select'
+
+    .mb-2 = f.label :energy_company_id, 'Concessionária'
+    = f.collection_select :energy_company_id, EnergyCompany.all, :id, :name, prompt: 'Selecione', class: 'form-select'
+
+    .mb-2 = f.label :area_available, 'Área disponível (m²)'
+    = f.number_field :area_available, step: 0.01, class: 'form-control'
+
+    .mb-2 = f.label :estimated_consumption_kwh_year, 'Consumo anual estimado (kWh)'
+    = f.number_field :estimated_consumption_kwh_year, step: 0.01, class: 'form-control'
+
+    .form-check.mb-2
+      = check_box_tag 'simulation[simulate_solar_batch]', '1', false, 'v-model': 'solarBatch'
+      = label_tag 'simulation_simulate_solar_batch', 'Simular lote solar'
+
+    .form-group.mb-2 v-show="solarBatch"
+      = label_tag 'simulation_panel_quantity', 'Quantidade de painéis'
+      = number_field_tag 'simulation[panel_quantity]', nil, class: 'form-control'
+
+    .form-check.mb-2
+      = check_box_tag 'simulation[simulate_wind_batch]', '1', false, 'v-model': 'windBatch'
+      = label_tag 'simulation_simulate_wind_batch', 'Simular lote eólico'
+
+    .form-group.mb-2 v-show="windBatch"
+      = label_tag 'simulation_turbine_quantity', 'Quantidade de turbinas'
+      = number_field_tag 'simulation[turbine_quantity]', nil, class: 'form-control'
+
+    = f.submit 'Simular', class: 'btn btn-orange mt-3'

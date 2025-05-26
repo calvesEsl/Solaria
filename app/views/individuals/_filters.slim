@@ -1,0 +1,30 @@
+.row.g-2.align-items-end.border-bottom.pb-3.mb-3
+  = form_with url: individuals_path, method: :get, local: true, class: 'd-flex flex-wrap align-items-end w-100 gap-2' do |f|
+
+    .form-group
+      = f.label :cpf, 'CPF', class: 'form-label small mb-1'
+      = f.text_field :cpf, class: 'form-control form-control-sm', style: 'width: 200px;', placeholder: 'Digite o nome'
+    .form-group
+      = f.label :name, 'Nome', class: 'form-label small mb-1'
+      = f.text_field :name, class: 'form-control form-control-sm', style: 'width: 200px;', placeholder: 'Digite o nome'
+
+    .form-group
+      = f.label :email, 'Email', class: 'form-label small mb-1'
+      = f.text_field :email, class: 'form-control form-control-sm', style: 'width: 200px;', placeholder: 'Digite o email'
+
+    .form-group
+      = f.label :phone, 'Telefone', class: 'form-label small mb-1'
+      = f.text_field :phone, class: 'form-control form-control-sm', style: 'width: 200px;', placeholder: 'Digite o email'
+
+    .form-group
+      = label_tag :city_id, 'Cidade', class: 'form-label small mb-1'
+      = select_tag :city_id, '',
+          class: 'form-select form-select-sm select2-ajax',
+          data: { url: cities_path },
+          include_blank: 'Selecione a cidade',
+          style: 'width: 200px;'
+
+
+    .ms-auto
+      button.btn.btn-orange.btn-sm.rounded type="submit" title="Buscar"
+        i.fa.fa-search

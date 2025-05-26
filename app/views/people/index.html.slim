@@ -1,27 +1,27 @@
-= content_for :javascripts do
-  javascript:
-    var vueForm;
-    document.addEventListener('DOMContentLoaded', function() {
-      vueForm = new People.Index('#people-index');
-    });
+/ = content_for :javascripts do
+/   javascript:
+/     var vueForm;
+/     document.addEventListener('DOMContentLoaded', function() {
+/       vueForm = new People.Index('#people-index');
+/     });
 
-#people-index.container-index v-cloak="true"
-  = index_header Person, new_person_path
+/ #people-index.container-index v-cloak="true"
+/   = index_header Person, new_person_path
 
-  = form_with url: people_path, method: :get, local: true do |f|
-    .row.mb-3
-      .col-md-4
-        = f.label :name, 'Nome'
-        = f.text_field :name, class: 'form-control'
-      .col-md-4
-        = f.label :email, 'Email'
-        = f.text_field :email, class: 'form-control'
-      .col-md-4.mt-auto
-        = f.submit 'Buscar', class: 'btn btn-success mt-4'
+/   = form_with url: people_path, method: :get, local: true do |f|
+/     .row.mb-3
+/       .col-md-4
+/         = f.label :name, 'Nome'
+/         = f.text_field :name, class: 'form-control'
+/       .col-md-4
+/         = f.label :email, 'Email'
+/         = f.text_field :email, class: 'form-control'
+/       .col-md-4.mt-auto
+/         = f.submit 'Buscar', class: 'btn btn-success mt-4'
 
-  p v-if="filtersEnabled" class="text-info mt-2" Filtros ativados!
-  button.btn.btn-outline-light.mb-3 @click="toggleFilters" Alternar filtros
+/   p v-if="filtersEnabled" class="text-info mt-2" Filtros ativados!
+/   button.btn.btn-outline-light.mb-3 @click="toggleFilters" Alternar filtros
 
-  = paginated_table @people, headers: ['Nome', 'Email', 'Telefone'], fields: [:name, :email, :phone], actions: people_actions
+/   = paginated_table @people, headers: ['Nome', 'Email', 'Telefone'], fields: [:name, :email, :phone], actions: people_actions
 
-  = paginate @people
+/   = paginate @people
