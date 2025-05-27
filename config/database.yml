@@ -9,6 +9,8 @@ default: &default
 development:
   <<: *default
   database: solaria_development
+  username: solaria
+  password: solaria123
 
 test:
   <<: *default
