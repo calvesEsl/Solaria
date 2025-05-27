@@ -21,6 +21,11 @@
     <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
   </div>
 
+  <div class="form-group">
+    <%= f.label :is_legal_person, "É pessoa jurídica?" %>
+    <%= f.select :is_legal_person, [["Sim", true], ["Não", false]], {}, class: "form-control" %>
+  </div>
+
   <div class="actions">
     <%= f.submit "Sign up" %>
   </div>
