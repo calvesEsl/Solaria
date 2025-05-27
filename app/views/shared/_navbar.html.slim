@@ -17,11 +17,15 @@ nav.navbar.navbar-expand-lg.navbar-custom
         li.nav-item.disabled
           span.nav-link.text-white.opacity-75 &VerticalBar;
 
-        li.nav-item.dropdown
-          a.nav-link.dropdown-toggle(href="#" id="cadastrosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false") Cadastros
-          ul.dropdown-menu(aria-labelledby="cadastrosDropdown")
-            li = link_to "Pessoas Físicas", people_path(type: "fisica"), class: "dropdown-item"
-            li = link_to "Pessoas Jurídicas", people_path(type: "juridica"), class: "dropdown-item"
+        - if user_signed_in?
+          li.nav-item.dropdown
+            a.nav-link.dropdown-toggle(href="#" id="cadastrosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false") Cadastros
+            ul.dropdown-menu(aria-labelledby="cadastrosDropdown")
+              - if current_user.is_legal_person
+                li = link_to "Filiais", companies_path, class: "dropdown-item"
+              - else
+                li = link_to "Meus Dados", individuals_path, class: "dropdown-item"
+
 
         li.nav-item.disabled
           span.nav-link.text-white.opacity-75 &VerticalBar;
