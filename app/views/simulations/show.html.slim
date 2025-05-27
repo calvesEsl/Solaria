@@ -1,20 +1,163 @@
-h2 Resultado da Simulação
+h2.mb-4.text-center Resultado da Simulação
 
-.card.mb-3
-  .card-header.bg-warning.text-white Energia Solar
-  .card-body
-    p Placas: #{@result[:solar][:panels]}
-    p Geração anual: #{@result[:solar][:annual_generation_kwh]} kWh
-    p Economia estimada: R$ #{@result[:solar][:estimated_savings]}
+.text-end.mb-3
+  = button_tag type: 'button', class: 'btn btn-outline-dark rounded-pill', data: { bs_toggle: 'modal', bs_target: '#historyModal' } do
+    i.fas.fa-clock.me-2
+    | Ver histórico da cidade
 
-.card.mb-3
-  .card-header.bg-info.text-white Energia Eólica
-  .card-body
-    p Turbinas: #{@result[:wind][:turbines]}
-    p Geração anual: #{@result[:wind][:annual_generation_kwh]} kWh
-    p Economia estimada: R$ #{@result[:wind][:estimated_savings]}
+#simulation-result-wrapper
+  .container
+    .row.row-cols-1.row-cols-md-2.g-4
 
-.alert.alert-success.mt-4
-  strong Melhor opção: #{@result[:better_option]}
+      .col
+        .card.shadow.border-0.card-animated
+          .card-header.bg-warning.text-white.fw-semibold
+            i.fas.fa-solar-panel.me-2
+            | Energia Solar
+          .card-body
+            p.mb-1 Placas: #{@solar[:panels]}
+            p.mb-1 Geração anual: #{@solar[:annual_generation_kwh]} kWh
+            p.mb-0 Economia estimada: R$ #{@solar[:estimated_savings]}
 
-= link_to 'Nova Simulação', new_simulation_path, class: 'btn btn-outline-secondary mt-3'
+      .col
+        .card.shadow.border-0.card-animated
+          .card-header.bg-info.text-white.fw-semibold
+            i.fas.fa-wind.me-2
+            | Energia Eólica
+          .card-body
+            p.mb-1 Turbinas: #{@wind[:turbines]}
+            p.mb-1 Geração anual: #{@wind[:annual_generation_kwh]} kWh
+            p.mb-0 Economia estimada: R$ #{@wind[:estimated_savings]}
+
+      .col
+        .card.shadow.border-0.card-animated
+          .card-header.bg-dark.text-white.fw-semibold
+            i.fas.fa-sun.me-2
+            | Indicadores Solares
+          .card-body
+            p.mb-1 Dias com pico solar: #{@solar_indicators[:solar_peak_days]}
+            p.mb-1 Índice UV médio: #{@solar_indicators[:uv_index_avg]}
+            p.mb-1 Nuvens médias: #{@solar_indicators[:cloud_cover_avg]}%
+            p.mb-1 CO₂ evitado: #{@solar_indicators[:co2_saved_kg]} kg
+            p.mb-1 Payback: #{@solar_indicators[:payback_years]} anos
+            p.mb-0 Retorno em 5 anos: R$ #{@solar_indicators[:economic_return_5y]}
+
+      .col
+        .card.shadow.border-0.card-animated
+          .card-header.bg-dark.text-white.fw-semibold
+            i.fas.fa-compass.me-2
+            | Indicadores Eólicos
+          .card-body
+            p.mb-1 Velocidade média do vento: #{@wind_indicators[:avg_wind_speed]} m/s
+            p.mb-0 Direção dominante do vento: #{@wind_indicators[:dominant_wind_direction]}°
+
+    h3.mt-5.mb-3.text-center Dashboard Comparativo
+
+    .carousel.slide#dashboardCarousel.position-relative data-bs-ride="carousel"
+      .carousel-inner.rounded.shadow
+
+        .carousel-item.active
+          .card.mb-3.border-0
+            .card-header.bg-secondary.text-white.fw-semibold Comparativo de Geração
+            .card-body
+              - comparativo_data = []
+              - comparativo_data << { name: "Solar", data: { "Geração" => @solar[:annual_generation_kwh] } }
+              - comparativo_data << { name: "Eólica", data: { "Geração" => @wind[:annual_generation_kwh] } }
+              = line_chart comparativo_data, height: "300px", colors: ["#ffc107", "#17a2b8"]
+
+        .carousel-item
+          .card.mb-3.border-0
+            .card-header.bg-primary.text-white.fw-semibold Comparativo de Retorno
+            .card-body
+              - retorno_data = {}
+              - retorno_data["Solar (R$)"] = @solar_indicators[:economic_return_5y]
+              - retorno_data["Eólica (R$)"] = @wind[:estimated_savings] * 5
+              = column_chart retorno_data, height: "300px", stacked: false
+
+        .carousel-item
+          .card.mb-3.border-0
+            .card-header.bg-success.text-white.fw-semibold Distribuição de Geração
+            .card-body
+              - pizza_data = {}
+              - pizza_data["Solar"] = @solar[:annual_generation_kwh]
+              - pizza_data["Eólica"] = @wind[:annual_generation_kwh]
+              = pie_chart pizza_data, height: "300px"
+
+      .position-absolute.top-0.start-0.w-25.h-100.z-1(style="cursor: pointer;" data-bs-target="#dashboardCarousel" data-bs-slide="prev")
+      .position-absolute.top-0.end-0.w-25.h-100.z-1(style="cursor: pointer;" data-bs-target="#dashboardCarousel" data-bs-slide="next")
+
+  .alert.alert-success.mt-4.text-center.rounded-pill.shadow-sm.p-3
+    strong Melhor opção: #{@better_option}
+
+  .text-center.mt-4
+    = link_to export_excel_simulation_path(@simulation), class: 'btn rounded-pill shadow px-4 py-2 text-white', style: 'background-color: #217346;' do
+      i.fas.fa-file-excel.me-2
+      | Exportar Excel
+
+    = link_to export_power_bi_simulation_path(@simulation), class: 'btn rounded-pill shadow px-4 py-2 text-white ms-2', style: 'background-color: #f2c811;' do
+      i.fas.fa-chart-pie.me-2
+      | Exportar Power BI
+
+    = link_to new_simulation_path, class: 'btn btn-outline-secondary rounded-pill shadow ms-2 px-4 py-2' do
+      i.fas.fa-redo.me-2
+      | Nova Simulação
+
+    = button_tag type: 'button', class: 'btn btn-danger ms-2 rounded-pill shadow px-4 py-2', id: 'export-pdf-btn' do
+      i.fas.fa-file-pdf.me-2
+      | Exportar PDF
+
+.modal.fade#historyModal tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true"
+  .modal-dialog.modal-lg.modal-dialog-scrollable
+    .modal-content.shadow-lg.rounded
+      .modal-header.bg-withe.text-orange
+        h5.modal-title#historyModalLabel Histórico de Simulações - #{@simulation.city.name}
+        button.btn-close.btn-close-white type="button" data-bs-dismiss="modal" aria-label="Fechar"
+      .modal-body
+        - @history = Simulation.where(city_id: @simulation.city_id).where.not(id: @simulation.id).order(created_at: :desc)
+        - if @history.any?
+          table.table.table-hover.table-striped.align-middle
+            thead.table-light
+              tr
+                th Data
+                th Consumo (kWh)
+                th Área (m²)
+                th Economia (R$)
+                th.text-center Ações
+            tbody
+              - @history.each do |sim|
+                tr
+                  td= sim.created_at.strftime("%d/%m/%Y")
+                  td= sim.estimated_consumption_kwh_year
+                  td= sim.area_available
+                  td= number_to_currency(sim.estimated_savings || 0)
+                  td.text-center
+                    = link_to simulation_path(sim), target: '_blank', class: 'btn btn-sm btn-outline-primary rounded-pill px-3' do
+                      i.fas.fa-eye.me-1
+                      | Ver
+        - else
+          .text-center.text-muted.my-3
+            i.fas.fa-info-circle.me-2
+            | Nenhuma outra simulação encontrada para esta cidade.
+
+
+javascript:
+  document.addEventListener('DOMContentLoaded', async function () {
+    const btn = document.getElementById('export-pdf-btn');
+    const wrapper = document.getElementById('simulation-result-wrapper');
+
+    if (!btn || !wrapper) return;
+
+    btn.addEventListener('click', async function () {
+      const canvas = await html2canvas(wrapper, { scale: 2 });
+      const imgData = canvas.toDataURL('image/png');
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save('resultado-simulacao.pdf');
+    });
+  });

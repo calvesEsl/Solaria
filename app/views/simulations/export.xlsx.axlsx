@@ -1,0 +1,26 @@
+wb = xlsx_package.workbook
+
+styles = wb.styles
+header = styles.add_style(b: true, bg_color: 'FFCC00', alignment: { horizontal: :center })
+currency = styles.add_style(num_fmt: 5)
+centered = styles.add_style(alignment: { horizontal: :center })
+
+wb.add_worksheet(name: "Simulação") do |sheet|
+  sheet.add_row ["Tipo", "Unidades", "Geração Anual (kWh)", "Economia Estimada (R$)"], style: header
+  sheet.add_row ["Solar", @solar[:panels], @solar[:annual_generation_kwh], @solar[:estimated_savings]], style: [centered, centered, centered, currency]
+  sheet.add_row ["Eólica", @wind[:turbines], @wind[:annual_generation_kwh], @wind[:estimated_savings]], style: [centered, centered, centered, currency]
+  sheet.add_row []
+
+  sheet.add_row ["Indicadores Solares"], style: header
+  sheet.add_row ["Dias com pico solar", @solar_indicators[:solar_peak_days]]
+  sheet.add_row ["Índice UV médio", @solar_indicators[:uv_index_avg]]
+  sheet.add_row ["Cobertura média de nuvens (%)", @solar_indicators[:cloud_cover_avg]]
+  sheet.add_row ["CO₂ evitado (kg)", @solar_indicators[:co2_saved_kg]]
+  sheet.add_row ["Payback estimado (anos)", @solar_indicators[:payback_years]]
+  sheet.add_row ["Retorno econômico em 5 anos (R$)", @solar_indicators[:economic_return_5y]]
+
+  sheet.add_row []
+  sheet.add_row ["Indicadores Eólicos"], style: header
+  sheet.add_row ["Velocidade média do vento (m/s)", @wind_indicators[:avg_wind_speed]]
+  sheet.add_row ["Direção dominante do vento (°)", @wind_indicators[:dominant_wind_direction]]
+end

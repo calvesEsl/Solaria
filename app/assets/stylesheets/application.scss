@@ -2,7 +2,275 @@
 @import "navbar_custom";
 @import "components/tables";
 
+html,
+body {
+  height: 100%;
+}
 
 body {
   background-color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  flex: 1;
+}
+
+.footer-custom {
+  background-color: #ff6600;
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 0.9rem;
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-orange {
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+
+  i {
+    font-size: 1.2rem;
+  }
+
+  &:hover {
+    background-color: #e65c00;
+    box-shadow: 0 0 10px rgba(255, 102, 0, 0.6);
+  }
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.btn-orange i.fas {
+  text-shadow: 0 0 2px #fff;
+}
+
+/* Botão */
+#simulation-form {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  border: 2px solid #ff9900;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+h1.text-center {
+  font-weight: bold;
+  color: #333;
+}
+
+.form-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #333;
+}
+
+hr.my-3 {
+  border-top: 2px solid #ccc;
+}
+
+/* Tooltip */
+.icon-tooltip {
+  font-size: 1rem;
+  cursor: pointer;
+  color: #888;
+  transition: color 0.3s ease;
+}
+
+.icon-tooltip:hover {
+  color: #000;
+}
+
+/* Botão de simulação */
+.simular-btn {
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.simular-btn:hover {
+  background-color: #e65c00;
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 102, 0, 0.4);
+}
+
+.highlighted {
+  animation: pulse 0.5s;
+  border: 1px solid #ff6600;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.simulation-wrapper {
+  border-radius: 16px;
+  background: linear-gradient(to bottom right, #ffffff, #fdf3e7);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  transition: all 0.3s ease;
+}
+
+.simulation-wrapper:hover {
+  box-shadow: 0 12px 50px rgba(0, 0, 0, 0.15);
+}
+
+.simulation-label-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.simulation-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #333;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  position: relative;
+
+  &::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: #ff6600;
+    margin: 0.5rem auto 0;
+    border-radius: 2px;
+  }
+}
+
+.simulation-divider {
+  border: none;
+  height: 2px;
+  background: #eee;
+  margin: 2rem 0 1rem;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+input.form-control,
+select.form-select {
+  height: 38px;
+  border-radius: 4px !important;
+}
+
+.form-switch-lg .form-check-input {
+  width: 3.5rem;
+  height: 2rem;
+  margin-left: -2.5rem;
+  cursor: pointer;
+}
+
+.form-switch-lg .form-check-input:checked {
+  background-color: #ff6600;
+  border-color: #ff6600;
+}
+
+.form-switch-lg .form-check-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 102, 0, 0.25);
+}
+
+.form-switch-orange .form-check-input:not(:checked) {
+  background-color: #ccc;
+  border-color: #ccc;
+}
+
+.toggle-orange {
+  width: 2.5rem;
+  height: 1.4rem;
+  background-color: #f38444;
+  border-color: #f38444;
+  transition: background-color 0.3s ease;
+
+  &:checked {
+    background-color: #ff6600;
+    border-color: #ff6600;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 0.15rem rgba(255, 102, 0, 0.3);
+  }
+}
+
+.limpar-btn {
+  background-color: white;
+  border: 2px solid #ccc;
+  color: #444;
+  transition: all 0.3s ease;
+
+  i {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    background-color: white; // mantém branco
+    border-color: #ff6600; // borda laranja
+    color: #ff6600; // texto laranja
+
+    i {
+      transform: rotate(-180deg);
+    }
+  }
+}
+
+input.form-control:focus,
+select.form-select:focus,
+textarea.form-control:focus {
+  border-color: #f07523;
+  box-shadow: 0 0 0 0.25rem rgba(255, 102, 0, 0.25);
+  outline: none;
+}
+
+#dashboardCarousel .carousel-control-prev,
+#dashboardCarousel .carousel-control-next {
+  display: none;
+}
+
+.card-animated {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+}
+
+.card-animated.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.text-orange {
+  color: #ff6600 !important;
 }

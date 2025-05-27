@@ -1,0 +1,21 @@
+h1 Relatórios Gerados
+
+table.table.table-bordered.table-striped
+  thead
+    tr
+      th ID
+      th Cidade
+      th Concessionária
+      th Data
+      th Ações
+  tbody
+    - @simulations.each do |sim|
+      tr
+        td = sim.id
+        td = sim.city.name
+        td = sim.energy_company.name
+        td = l sim.created_at, format: :short
+        td
+          = link_to 'Ver', simulation_path(sim), class: 'btn btn-sm btn-primary'
+          = link_to 'Excel', simulation_path(sim, format: :xlsx), class: 'btn btn-sm btn-success ml-2'
+          = link_to 'Exportar Power BI', export_power_bi_simulation_path(simulation), class: 'btn btn-sm btn-outline-primary'

@@ -23,7 +23,6 @@ class HomeController < ApplicationController
   private
 
   def resource_params
-    debugger
     params.require(:user).permit(:name)
   end
 end
