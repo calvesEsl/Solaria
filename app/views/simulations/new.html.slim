@@ -1,39 +1,77 @@
-= content_for :javascripts do
+= content_for :javascripts do 
   javascript:
     document.addEventListener('DOMContentLoaded', function() {
       new Simulation.Form('#simulation-form')
     })
 
-h1 Nova Simulação
+.container.mt-5
+  .card.shadow-lg.border-0
+    .card-body.p-4.bg-white.rounded
 
-#simulation-form
-  = form_with model: @simulation, local: true do |f|
-    .mb-2 = f.label :city_id, 'Cidade'
-    = f.collection_select :city_id, City.all, :id, :name, prompt: 'Selecione', class: 'form-select'
+      h2.text-center.text-dark.mb-4
+        i.fas.fa-solar-panel.me-2
+        | Nova Simulação
 
-    .mb-2 = f.label :energy_company_id, 'Concessionária'
-    = f.collection_select :energy_company_id, EnergyCompany.all, :id, :name, prompt: 'Selecione', class: 'form-select'
+      #simulation-form
+        = form_with model: @simulation, local: true do |f|
+          .row
+            .col-md-6.mb-4
+              = f.label :city_id, class: 'form-label fw-semibold'
+                | Cidade
+                i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Selecione a cidade onde a instalação será realizada.")
+              = f.collection_select :city_id, City.all, :id, :name, prompt: 'Selecione', class: 'form-select'
 
-    .mb-2 = f.label :area_available, 'Área disponível (m²)'
-    = f.number_field :area_available, step: 0.01, class: 'form-control'
+            .col-md-6.mb-4
+              = f.label :energy_company_id, class: 'form-label fw-semibold'
+                | Concessionária
+                i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Escolha a empresa fornecedora de energia da região.")
+              = f.collection_select :energy_company_id, EnergyCompany.all, :id, :name, prompt: 'Selecione', class: 'form-select'
 
-    .mb-2 = f.label :estimated_consumption_kwh_year, 'Consumo anual estimado (kWh)'
-    = f.number_field :estimated_consumption_kwh_year, step: 0.01, class: 'form-control'
+          .row
+            .col-md-6.mb-4
+              = f.label :area_available, class: 'form-label fw-semibold'
+                | Área disponível (m²)
+                i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Informe o espaço físico disponível em metros quadrados para instalação dos painéis ou bobinas.")
+              = f.number_field :area_available, step: 0.10, class: 'form-control'
 
-    .form-check.mb-2
-      = check_box_tag 'simulation[simulate_solar_batch]', '1', false, 'v-model': 'solarBatch'
-      = label_tag 'simulation_simulate_solar_batch', 'Simular lote solar'
+            .col-md-6.mb-4
+              = f.label :estimated_consumption_kwh_year, class: 'form-label fw-semibold'
+                | Consumo anual estimado (kWh)
+                i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Informe o total de energia consumida por ano em quilowatt-hora.")
 
-    .form-group.mb-2 v-show="solarBatch"
-      = label_tag 'simulation_panel_quantity', 'Quantidade de painéis'
-      = number_field_tag 'simulation[panel_quantity]', nil, class: 'form-control'
+              = f.number_field :estimated_consumption_kwh_year, step: 0.10, class: 'form-control'
 
-    .form-check.mb-2
-      = check_box_tag 'simulation[simulate_wind_batch]', '1', false, 'v-model': 'windBatch'
-      = label_tag 'simulation_simulate_wind_batch', 'Simular lote eólico'
+          .row
+            .col-md-6.mb-4
+              .d-flex.align-items-center.gap-2
+                = check_box_tag 'simulation[simulate_solar_batch]', '1', false, class: 'form-check-input toggle-orange', 'v-model': 'solarBatch', id: 'solarSwitch'
+                = label_tag 'solarSwitch', 'Simular lote solar', class: 'form-check-label fw-bold mb-0'
 
-    .form-group.mb-2 v-show="windBatch"
-      = label_tag 'simulation_turbine_quantity', 'Quantidade de turbinas'
-      = number_field_tag 'simulation[turbine_quantity]', nil, class: 'form-control'
+              transition(name='fade')
+                .mt-3(v-show="solarBatch")
+                  = label_tag 'simulation_panel_quantity', class: 'form-label fw-semibold'
+                    | Quantidade de painéis
+                    i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Número de painéis solares a serem simulados.")
+                  = number_field_tag 'simulation[panel_quantity]', nil, class: 'form-control'
 
-    = f.submit 'Simular', class: 'btn btn-orange mt-3'
+            .col-md-6.mb-4
+              .d-flex.align-items-center.gap-2
+                = check_box_tag 'simulation[simulate_wind_batch]', '1', false, class: 'form-check-input toggle-orange', 'v-model': 'windBatch', id: 'windSwitch'
+                = label_tag 'windSwitch', 'Simular lote eólico', class: 'form-check-label fw-bold mb-0'
+
+              transition(name='fade')
+                .mt-3(v-show="windBatch")
+                  = label_tag 'simulation_turbine_quantity', class: 'form-label fw-semibold'
+                    | Quantidade de turbinas
+                    i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Número de turbinas eólicas a serem simuladas.")
+                  = number_field_tag 'simulation[turbine_quantity]', nil, class: 'form-control'
+
+          .row.mt-4
+            .col-12.d-flex.justify-content-between
+              = button_tag 'Limpar', type: 'reset', class: 'btn btn-outline-secondary limpar-btn d-inline-flex align-items-center gap-2 px-4 py-2 shadow'
+                i.fas.fa-undo
+                | Limpar
+
+              button.btn.btn-orange.simular-btn.d-inline-flex.align-items-center.gap-2.px-4.py-2.shadow type="submit" data-disable-with="<i class='fas fa-spinner fa-spin'></i> Simulando..."
+                i.fas.fa-bolt
+                | Simular

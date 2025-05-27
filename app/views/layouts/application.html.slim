@@ -12,16 +12,25 @@ html
     = javascript_include_tag "https://code.jquery.com/jquery-3.6.0.min.js"
     = javascript_include_tag "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"
     = javascript_include_tag "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js", defer: true
+    = javascript_include_tag "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+    = javascript_include_tag "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
     = javascript_include_tag "application"
 
   body
     = render 'shared/navbar'
 
     .container.mt-3
-      - if notice
-        .alert.alert-success= notice
-      - if alert
-        .alert.alert-danger= alert
+      - if flash[:notice]
+        javascript:
+          toastr.success("#{j flash[:notice]}")
+
+      - if flash[:alert]
+        javascript:
+          toastr.error("#{j flash[:alert]}")
 
       = yield
       = yield :javascripts
+
+    footer.footer-custom.mt-5
+      | © #{Time.now.year} Solaria. Todos os direitos reservados.
+

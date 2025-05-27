@@ -9,3 +9,7 @@ pt-BR:
         other: Pessoas Físicas
   helpers:
     new: "Novo"
+
+  time:
+    formats:
+      short: "%d/%m/%Y %H:%M"

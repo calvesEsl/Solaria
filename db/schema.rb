@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_26_234619) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_27_014058) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -63,6 +63,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_26_234619) do
     t.json "solar_raw_data"
     t.integer "panel_quantity"
     t.integer "turbine_quantity"
+    t.jsonb "solar_result"
+    t.jsonb "wind_result"
+    t.string "better_option"
     t.index ["city_id"], name: "index_simulations_on_city_id"
     t.index ["energy_company_id"], name: "index_simulations_on_energy_company_id"
   end

@@ -14,5 +14,10 @@ Rails.application.routes.draw do
   resources :individuals
   resources :companies
   resources :cities, only: [:index]
-  resources :simulations
+  resources :simulations do
+    member do
+      get :export_excel
+      get :export_power_bi
+    end
+  end
 end

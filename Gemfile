@@ -30,6 +30,10 @@ gem 'devise'
 
 gem 'kaminari-bootstrap'
 
+gem "chartkick"
+gem "groupdate"
+gem 'axlsx_rails'
+
 require 'debug'
 
 # Use Redis adapter to run Action Cable in production
