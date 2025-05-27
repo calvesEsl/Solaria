@@ -37,6 +37,8 @@ html
       |   border-radius: 6px;
       |   transition: all 0.3s ease-in-out;
       |   box-shadow: 0 4px 10px rgba(255, 102, 0, 0.4);
+      |   min-width: 120px;
+      |   
       | }
       |
       | .btn-orange:hover {
@@ -141,4 +143,5 @@ html
                   = f.label :is_legal_person_true, 'Pessoa Jurídica', class: 'btn btn-outline-orange'
 
             .d-flex.justify-content-center
-              = f.submit "CADASTRAR", class: "btn btn-orange px-5", style: "height: 45px;"
+              = f.submit "CADASTRAR", class: "btn btn-orange px-4 py-2", style: "min-width: 140px;"
+
