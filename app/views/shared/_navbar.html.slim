@@ -24,7 +24,7 @@ nav.navbar.navbar-expand-lg.navbar-custom
               - if current_user.is_legal_person
                 li = link_to "Filiais", companies_path, class: "dropdown-item"
               - else
-                li = link_to "Meus Dados", individuals_path, class: "dropdown-item"
+                li = link_to "Meus Dados", individual_path(current_user.individual), class: "dropdown-item"
 
 
         li.nav-item.disabled
