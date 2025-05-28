@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_27_014058) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_28_012114) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -36,6 +36,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_27_014058) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "individuals", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name"
+    t.string "email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_individuals_on_user_id"
+  end
+
   create_table "people", force: :cascade do |t|
     t.string "name"
     t.string "email"
@@ -48,7 +57,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_27_014058) do
     t.string "endereco"
     t.decimal "calculation_area", precision: 10, scale: 2
     t.string "type"
+    t.bigint "user_id", null: false
     t.index ["city_id"], name: "index_people_on_city_id"
+    t.index ["user_id"], name: "index_people_on_user_id"
   end
 
   create_table "simulations", force: :cascade do |t|
@@ -66,6 +77,14 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_27_014058) do
     t.jsonb "solar_result"
     t.jsonb "wind_result"
     t.string "better_option"
+    t.float "co2_saved_kg"
+    t.float "payback_years"
+    t.integer "solar_peak_days"
+    t.float "avg_wind_speed"
+    t.integer "dominant_wind_direction"
+    t.float "uv_index_avg"
+    t.float "cloud_cover_avg"
+    t.float "economic_return_5y"
     t.index ["city_id"], name: "index_simulations_on_city_id"
     t.index ["energy_company_id"], name: "index_simulations_on_energy_company_id"
   end
@@ -96,7 +115,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_27_014058) do
   end
 
   add_foreign_key "cities", "states"
+  add_foreign_key "individuals", "users"
   add_foreign_key "people", "cities"
+  add_foreign_key "people", "users"
   add_foreign_key "simulations", "cities"
   add_foreign_key "simulations", "energy_companies"
 end
