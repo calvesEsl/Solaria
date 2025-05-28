@@ -3,6 +3,16 @@ class EnergyCompaniesController < ApplicationController
   require 'mini_magick'
   require 'openai'
 
+  def index
+    @energy_companies = EnergyCompany.all
+
+    @energy_companies = @energy_companies.where("name ILIKE ?", "%#{params[:name]}%") if params[:name].present?
+    @energy_companies = @energy_companies.where(city_id: params[:city_id]) if params[:city_id].present?
+    @energy_companies = @energy_companies.where("price_per_kwh = ?", params[:price_per_kwh]) if params[:price_per_kwh].present?
+
+    @energy_companies = @energy_companies.order(:name).page(params[:page]).per(10)
+  end
+
   def new
     @energy_company = EnergyCompany.new
   end
@@ -11,14 +21,36 @@ class EnergyCompaniesController < ApplicationController
     @energy_company = EnergyCompany.new(energy_company_params)
 
     if @energy_company.save
-      redirect_to @energy_company, notice: 'Empresa cadastrada com sucesso.'
+      flash[:notice] = 'Empresa cadastrada com sucesso.'
+      render :edit
     else
       render :new
     end
   end
 
-  def show
+  def edit
     @energy_company = EnergyCompany.find(params[:id])
+  end
+
+  def update
+    @energy_company = EnergyCompany.find(params[:id])
+
+    if @energy_company.update(energy_company_params)
+      redirect_to @energy_company, notice: 'Concessionária atualizada com sucesso.'
+    else
+      render :edit
+    end
+  end
+
+  def destroy
+    @energy_company = EnergyCompany.find(params[:id])
+    @energy_company.destroy
+
+    redirect_to energy_companies_path, notice: 'Concessionária excluída com sucesso.'
+  end
+
+  def show
+    redirect_to edit_energy_company_path(params[:id])
   end
 
   def extract_data
@@ -41,6 +73,8 @@ class EnergyCompaniesController < ApplicationController
       # OCR com RTesseract
       image = RTesseract.new(temp_path.to_s, lang: 'por')
       raw_text = image.to_s
+
+      puts raw_text
 
       # Chamada ao OpenIA
       client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])

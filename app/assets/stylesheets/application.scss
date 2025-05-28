@@ -1,16 +1,30 @@
 @import "bootstrap";
 @import "navbar_custom";
 @import "components/tables";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
 html,
 body {
   height: 100%;
+  font-family: 'Poppins', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background-color: #e0e0e0;
   display: flex;
   flex-direction: column;
+}
+
+body,
+.navbar,
+.nav-link,
+.dropdown-menu,
+.dropdown-item {
+  font-family: 'Poppins', sans-serif;
 }
 
 .container {
@@ -273,4 +287,42 @@ textarea.form-control:focus {
 
 .text-orange {
   color: #ff6600 !important;
+}
+
+.floating-support-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  background-color: #ff7a00;
+  color: white;
+  font-size: 1.75rem;
+  padding: 12px 16px;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  transition: background-color 0.3s, transform 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: floatEmoji 3s ease-in-out infinite;
+}
+
+.floating-support-btn:hover {
+  background-color: #e96e00;
+  transform: scale(1.1);
+}
+
+@keyframes floatEmoji {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
 }

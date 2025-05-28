@@ -4,6 +4,8 @@ class SimulationsController < ApplicationController
 
   def index
     @simulations = Simulation.includes(:city, :energy_company).order(created_at: :desc)
+    @simulations = @simulations.where(city_id: params[:city_id]) if params[:city_id].present?
+    @simulations = @simulations.page(params[:page]).per(10)
   end
 
   def new
@@ -177,8 +179,6 @@ class SimulationsController < ApplicationController
       wind_return_5y: result[:wind_return_5y]
     }
 
-    better_option = result[:better_option]
-
     prompt = <<~TEXT
       Você é um especialista em energias renováveis. Compare os seguintes resultados de uma simulação entre energia solar e eólica, e explique de forma clara e amigável qual delas é mais vantajosa, por quê, e o que os dados significam.
 
@@ -230,12 +230,13 @@ class SimulationsController < ApplicationController
       :simulate_solar_batch, :simulate_wind_batch,
       :panel_quantity, :turbine_quantity,
       :estimated_consumption_kwh_year,
-      :cost_per_panel, :cost_per_turbine
+      :cost_per_panel, :cost_per_turbine, :company_id
     )
 
     raw_params[:cost_per_panel] = parse_currency(raw_params[:cost_per_panel]) if raw_params[:cost_per_panel].present?
     raw_params[:cost_per_turbine] = parse_currency(raw_params[:cost_per_turbine]) if raw_params[:cost_per_turbine].present?
 
+    raw_params[:estimated_consumption_kwh_year] = parse_currency(raw_params[:estimated_consumption_kwh_year]) if raw_params[:estimated_consumption_kwh_year].present?
     raw_params
   end
 

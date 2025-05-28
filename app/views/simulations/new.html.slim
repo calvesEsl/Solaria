@@ -4,28 +4,77 @@
       new Simulation.Form('#simulation-form')
     })
 
+  style
+    |
+      #city-select select,
+      #company-select select,
+      #energy-company-select select {
+        display: block;
+        width: 100%;
+        height: 48px;
+        min-width: 100%;
+        font-size: 16px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        background-color: #fff;
+        transition: box-shadow 0.3s ease;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+      }
+
+      #city-select select:focus,
+      #company-select select:focus,
+      #energy-company-select select:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(255, 102, 0, 0.25);
+        border-color: #ff6600;
+      }
+
 .container.mt-5
   .card.shadow-lg.border-0
     .card-body.p-4.bg-white.rounded
 
-      h2.text-center.text-dark.mb-4
+      h2.text-center.text-orange.mb-4
         i.fas.fa-solar-panel.me-2
         | Nova Simulação
 
       #simulation-form
         = form_with model: @simulation, local: true do |f|
-          .row
-            .col-md-6.mb-4
-              = f.label :city_id, class: 'form-label fw-semibold'
-                | Cidade
-                i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Selecione a cidade onde a instalação será realizada.")
-              = f.collection_select :city_id, City.all, :id, :name, prompt: 'Selecione', class: 'form-select'
 
-            .col-md-6.mb-4
-              = f.label :energy_company_id, class: 'form-label fw-semibold'
-                | Concessionária
-                i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Escolha a empresa fornecedora de energia da região.")
-              = f.collection_select :energy_company_id, EnergyCompany.all, :id, :name, prompt: 'Selecione', class: 'form-select'
+          - if current_user.is_legal_person
+            .row
+              #city-select.col-md-4.mb-4
+                = f.label :city_id, class: 'form-label fw-semibold'
+                  | Cidade
+                  i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Selecione a cidade onde a instalação será realizada.")
+                = f.collection_select :city_id, City.all, :id, :name, prompt: 'Selecione', class: ''
+
+              #company-select.col-md-4.mb-4
+                = f.label :company_id, class: 'form-label fw-semibold'
+                  | Filial
+                  i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Selecione a filial responsável pela simulação.")
+                = f.collection_select :company_id, Company.all, :id, :name, prompt: 'Selecione', class: ''
+
+              #energy-company-select.col-md-4.mb-4
+                = f.label :energy_company_id, class: 'form-label fw-semibold'
+                  | Concessionária
+                  i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Escolha a empresa fornecedora de energia da região.")
+                = f.collection_select :energy_company_id, EnergyCompany.all, :id, :name, prompt: 'Selecione', class: ''
+          - else
+            .row
+              #city-select.col-md-6.mb-4
+                = f.label :city_id, class: 'form-label fw-semibold'
+                  | Cidade
+                  i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Selecione a cidade onde a instalação será realizada.")
+                = f.collection_select :city_id, City.all, :id, :name, prompt: 'Selecione', class: ''
+
+              #energy-company-select.col-md-6.mb-4
+                = f.label :energy_company_id, class: 'form-label fw-semibold'
+                  | Concessionária
+                  i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Escolha a empresa fornecedora de energia da região.")
+                = f.collection_select :energy_company_id, EnergyCompany.all, :id, :name, prompt: 'Selecione', class: ''
 
           .row
             .col-md-6.mb-4
@@ -38,8 +87,7 @@
               = f.label :estimated_consumption_kwh_year, class: 'form-label fw-semibold'
                 | Consumo anual estimado (kWh)
                 i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Informe o total de energia consumida por ano em quilowatt-hora.")
-
-              = f.number_field :estimated_consumption_kwh_year, step: 0.10, class: 'form-control'
+              = f.text_field :estimated_consumption_kwh_year, class: 'form-control', 'v-model': 'consumptionYear', '@input': 'formatNumber("consumptionYear")'
 
           .row
             .col-md-6.mb-4

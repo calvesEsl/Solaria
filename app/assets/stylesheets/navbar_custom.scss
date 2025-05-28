@@ -1,23 +1,48 @@
 .navbar-custom {
   background-color: #ff6600;
 
-  .nav-link {
+  .navbar-brand {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
     color: white !important;
-    margin: 0 10px;
+    letter-spacing: 0.8px;
+    transition: color 0.3s ease;
+  }
+
+  .navbar-brand:hover {
+    color: #ffe0cc !important;
+  }
+
+  .nav-link {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    letter-spacing: 0.3px;
+    color: white !important;
+    margin: 0 8px;
+    padding: 6px 14px;
+    border-radius: 12px;
+    transition: all 0.3s ease-in-out;
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.2);
-      border-radius: 6px;
+      color: #ffe0cc !important;
+      transform: translateY(-1px);
     }
   }
 
   .dropdown-menu {
     background-color: #fff;
-    border-radius: 0.5rem;
+    border-radius: 12px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 
     .dropdown-item {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
       color: #333;
+      border-radius: 8px;
+      padding: 8px 16px;
 
       &:hover {
         background-color: #f2f2f2;

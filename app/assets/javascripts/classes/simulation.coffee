@@ -9,6 +9,7 @@ class Simulation.Form
         windBatch: false
         costPerPanel: ''
         costPerTurbine: ''
+        consumptionYear: ''
       mounted: ->
         form = document.querySelector('form')
 
@@ -16,6 +17,9 @@ class Simulation.Form
           setTimeout =>
             @solarBatch = document.querySelector('#simulation_simulate_solar_batch')?.checked
             @windBatch  = document.querySelector('#simulation_simulate_wind_batch')?.checked
+            @costPerPanel = ''
+            @costPerTurbine = ''
+            @consumptionYear = ''
           , 50
 
         document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach (el) ->
@@ -27,6 +31,13 @@ class Simulation.Form
               el.classList.add('visible')
             , i * 150
 
+        button = document.querySelector('.simular-btn')
+        if button
+          button.addEventListener 'mouseenter', ->
+            button.classList.add('glow')
+          button.addEventListener 'mouseleave', ->
+            button.classList.remove('glow')
+
       methods:
         formatCurrency: (field) ->
           value = @[field]
@@ -35,20 +46,12 @@ class Simulation.Form
           value = value.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')
           @[field] = "R$ #{value}"
 
-      document.addEventListener 'DOMContentLoaded', ->
-        button = document.querySelector('.simular-btn')
-        if button
-          button.addEventListener 'mouseenter', ->
-            button.classList.add('glow')
-          button.addEventListener 'mouseleave', ->
-            button.classList.remove('glow')
-
-      document.querySelector('form')?.addEventListener 'reset', =>
-        setTimeout =>
-          @solarBatch = false
-          @windBatch = false
-        , 50
-
+        formatNumber: (field) ->
+          value = @[field]
+          value = value.toString().replace(/[^\d]/g, '')
+          if value
+            value = parseInt(value).toLocaleString('pt-BR')
+          @[field] = value
 
 document.addEventListener 'DOMContentLoaded', ->
   document.querySelectorAll('.card-animated').forEach (el, i) ->

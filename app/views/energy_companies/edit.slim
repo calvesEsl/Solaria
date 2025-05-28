@@ -1,0 +1,73 @@
+style
+  | .container-form {
+  |   max-width: 720px;
+  |   margin: 3rem auto;
+  |   background: #fff;
+  |   padding: 2rem 2.5rem;
+  |   border-radius: 1.25rem;
+  |   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  | }
+  | .form-label {
+  |   font-weight: 600;
+  |   margin-bottom: 0.5rem;
+  | }
+  | .form-control, .form-select-city {
+  |   border-radius: 0.5rem;
+  |   padding: 0.75rem;
+  |   width: 100%;
+  |   max-width: 100%;
+  |   text-overflow: ellipsis;
+  |   overflow: hidden;
+  |   white-space: nowrap;
+  |   border: 1px solid #ced4da;
+  |   background-color: #fff;
+  |   color: #495057;
+  |   font-size: 1rem;
+  |   line-height: 1.5;
+  |   appearance: none;
+  |   -webkit-appearance: none;
+  |   -moz-appearance: none;
+  | }
+  | .btn-orange {
+  |   background-color: #ff7a00;
+  |   border: none;
+  |   color: white;
+  |   padding: 0.75rem 1.5rem;
+  |   border-radius: 0.75rem;
+  |   font-weight: bold;
+  |   transition: background-color 0.3s ease;
+  | }
+  | .btn-orange:hover {
+  |   background-color: #e96e00;
+  | }
+  | .loading {
+  |   color: #ff7a00;
+  |   font-style: italic;
+  |   margin-top: 0.5rem;
+  | }
+  | #preview {
+  |   margin-top: 1rem;
+  |   max-width: 100%;
+  |   border: 1px solid #ddd;
+  |   border-radius: 0.5rem;
+  | }
+
+.container-form
+  h1.text-orange.text-center.mb-3 Editar Concessionária
+
+  #energy-company-form
+    = form_with model: @energy_company, local: true, multipart: true do |f|
+      .mb-4
+        = f.label :name, 'Nome da Concessionária', class: 'form-label'
+        = f.text_field :name, class: 'form-control', id: 'company-name'
+
+      .mb-4
+        = f.label :city_id, 'Cidade', class: 'form-label'
+        = f.collection_select :city_id, City.all.order(:name), :id, :name, {}, { class: 'form-select-city', id: 'city-select' }
+
+      .mb-4
+        = f.label :price_per_kwh, 'Preço por kWh (R$)', class: 'form-label'
+        = f.text_field :price_per_kwh, step: 0.0001, class: 'form-control', id: 'company-price'
+
+      .text-center.mt-4
+        = f.submit 'Salvar Alterações', class: 'btn btn-orange'
