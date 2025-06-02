@@ -1,4 +1,7 @@
 class SimulationsController < ApplicationController
+  require 'openai'
+  require 'axlsx'
+
   def index
     @simulations = Simulation.includes(:city, :energy_company).order(created_at: :desc)
   end
@@ -12,11 +15,12 @@ class SimulationsController < ApplicationController
 
     if @simulation.save
       result = SimulationService.new(@simulation).perform
+      explicacao = explain_results_with_ai(result)
 
       @simulation.update(
         solar_result: result[:solar],
         wind_result: result[:wind],
-        better_option: result[:better_option],
+        better_option: explicacao,
         co2_saved_kg: result[:co2_saved_kg],
         payback_years: result[:payback_years],
         solar_peak_days: result[:solar_peak_days],
@@ -24,7 +28,9 @@ class SimulationsController < ApplicationController
         dominant_wind_direction: result[:dominant_wind_direction],
         uv_index_avg: result[:uv_index_avg],
         cloud_cover_avg: result[:cloud_cover_avg],
-        economic_return_5y: result[:economic_return_5y]
+        economic_return_5y: result[:economic_return_5y],
+        wind_return_5y: result[:wind_return_5y],
+        wind_payback_years: result[:wind_payback_years]
       )
       flash[:notice] = "Simulação enviada com sucesso"
       redirect_to @simulation
@@ -37,40 +43,24 @@ class SimulationsController < ApplicationController
   def show
     @simulation = Simulation.find(params[:id])
 
-    if @simulation.solar_result.present? && @simulation.wind_result.present?
-      @result = {
-        solar: @simulation.solar_result.symbolize_keys,
-        wind: @simulation.wind_result.symbolize_keys,
-        better_option: @simulation.better_option,
-        co2_saved_kg: @simulation.co2_saved_kg,
-        payback_years: @simulation.payback_years,
-        solar_peak_days: @simulation.solar_peak_days,
-        avg_wind_speed: @simulation.avg_wind_speed,
-        dominant_wind_direction: @simulation.dominant_wind_direction,
-        uv_index_avg: @simulation.uv_index_avg,
-        cloud_cover_avg: @simulation.cloud_cover_avg,
-        economic_return_5y: @simulation.economic_return_5y
-      }
-    else
-      @result = SimulationService.new(@simulation).perform
-      @simulation.update(
-        solar_result: @result[:solar],
-        wind_result: @result[:wind],
-        better_option: @result[:better_option],
-        co2_saved_kg: @result[:co2_saved_kg],
-        payback_years: @result[:payback_years],
-        solar_peak_days: @result[:solar_peak_days],
-        avg_wind_speed: @result[:avg_wind_speed],
-        dominant_wind_direction: @result[:dominant_wind_direction],
-        uv_index_avg: @result[:uv_index_avg],
-        cloud_cover_avg: @result[:cloud_cover_avg],
-        economic_return_5y: @result[:economic_return_5y]
-      )
-    end
+    @solar = @simulation.solar_result.symbolize_keys
+    @wind  = @simulation.wind_result.symbolize_keys
 
-    @solar = @result[:solar]
-    @wind = @result[:wind]
-    @better_option = @result[:better_option]
+    @result = {
+      solar: @solar,
+      wind: @wind,
+      better_option: @simulation.better_option,
+      co2_saved_kg: @simulation.co2_saved_kg,
+      payback_years: @simulation.payback_years,
+      wind_payback_years: @simulation.wind_payback_years,
+      solar_peak_days: @simulation.solar_peak_days,
+      avg_wind_speed: @simulation.avg_wind_speed,
+      dominant_wind_direction: @simulation.dominant_wind_direction,
+      uv_index_avg: @simulation.uv_index_avg,
+      cloud_cover_avg: @simulation.cloud_cover_avg,
+      economic_return_5y: @simulation.economic_return_5y,
+      wind_return_5y: @simulation.wind_return_5y
+    }
 
     @solar_indicators = {
       co2_saved_kg: @result[:co2_saved_kg],
@@ -84,7 +74,8 @@ class SimulationsController < ApplicationController
     @wind_indicators = {
       avg_wind_speed: @result[:avg_wind_speed],
       dominant_wind_direction: @result[:dominant_wind_direction],
-      economic_return_5y: @wind[:economic_return_5y]
+      payback_years: @result[:wind_payback_years],
+      economic_return_5y: @result[:wind_return_5y]
     }
 
     respond_to do |format|
@@ -123,6 +114,8 @@ class SimulationsController < ApplicationController
       sheet.add_row ["Indicadores Eólicos"], style: header
       sheet.add_row ["Velocidade média do vento (m/s)", @wind_indicators[:avg_wind_speed]]
       sheet.add_row ["Direção dominante do vento (°)", @wind_indicators[:dominant_wind_direction]]
+      sheet.add_row ["Payback estimado (anos)", @wind_indicators[:payback_years]]
+      sheet.add_row ["Retorno econômico em 5 anos (R$)", @wind_indicators[:economic_return_5y]]
     end
 
     send_data xlsx_package.to_stream.read, filename: "simulacao_#{@simulation.id}.xlsx", type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -154,6 +147,8 @@ class SimulationsController < ApplicationController
       sheet.add_row ["Eólica", "Economia Estimada (R$)", @wind[:estimated_savings]]
       sheet.add_row ["Eólica", "Velocidade média do vento", @wind_indicators[:avg_wind_speed]]
       sheet.add_row ["Eólica", "Direção dominante do vento", @wind_indicators[:dominant_wind_direction]]
+      sheet.add_row ["Eólica", "Payback (anos)", @wind_indicators[:payback_years]]
+      sheet.add_row ["Eólica", "Retorno 5 anos (R$)", @wind_indicators[:economic_return_5y]]
 
       sheet.add_row ["Geral", "Melhor opção", @better_option]
     end
@@ -163,13 +158,89 @@ class SimulationsController < ApplicationController
 
   private
 
+  def explain_results_with_ai(result)
+    solar = result[:solar]
+    wind = result[:wind]
+    solar_indicators = {
+      co2_saved_kg: result[:co2_saved_kg],
+      payback_years: result[:payback_years],
+      solar_peak_days: result[:solar_peak_days],
+      uv_index_avg: result[:uv_index_avg],
+      cloud_cover_avg: result[:cloud_cover_avg],
+      economic_return_5y: result[:economic_return_5y]
+    }
+
+    wind_indicators = {
+      avg_wind_speed: result[:avg_wind_speed],
+      dominant_wind_direction: result[:dominant_wind_direction],
+      wind_payback_years: result[:wind_payback_years],
+      wind_return_5y: result[:wind_return_5y]
+    }
+
+    better_option = result[:better_option]
+
+    prompt = <<~TEXT
+      Você é um especialista em energias renováveis. Compare os seguintes resultados de uma simulação entre energia solar e eólica, e explique de forma clara e amigável qual delas é mais vantajosa, por quê, e o que os dados significam.
+
+      Resultados da simulação:
+      - Energia Solar:
+        - Placas: #{solar[:panels]}
+        - Geração anual: #{solar[:annual_generation_kwh]} kWh
+        - Economia estimada: R$ #{solar[:estimated_savings]}
+        - Dias com pico solar: #{solar_indicators[:solar_peak_days]}
+        - Índice UV médio: #{solar_indicators[:uv_index_avg]}
+        - Nuvens médias: #{solar_indicators[:cloud_cover_avg]}%
+        - CO₂ evitado: #{solar_indicators[:co2_saved_kg]} kg
+        - Payback: #{solar_indicators[:payback_years]} anos
+        - Retorno em 5 anos: R$ #{solar_indicators[:economic_return_5y]}
+
+      - Energia Eólica:
+        - Turbinas: #{wind[:turbines]}
+        - Geração anual: #{wind[:annual_generation_kwh]} kWh
+        - Economia estimada: R$ #{wind[:estimated_savings]}
+        - Velocidade média do vento: #{wind_indicators[:avg_wind_speed]} m/s
+        - Direção dominante do vento: #{wind_indicators[:dominant_wind_direction]}°
+        - Payback: #{wind_indicators[:wind_payback_years]} anos
+        - Retorno em 5 anos: R$ #{wind_indicators[:wind_return_5y]}
+
+      Gere uma explicação com até 3 parágrafos e retorne string.
+    TEXT
+
+    client = OpenAI::Client.new(access_token: ENV['OPENAI_API_KEY'])
+    response = client.chat(
+      parameters: {
+        model: "gpt-3.5-turbo",
+        temperature: 0.5,
+        messages: [
+          { role: "system", content: "Você é um engenheiro especialista em energia solar e eólica, e explica resultados de forma clara e educativa para clientes." },
+          { role: "user", content: prompt }
+        ]
+      }
+    )
+
+    response.dig("choices", 0, "message", "content")
+  rescue => e
+    Rails.logger.error("[OpenAI] Erro: #{e.message}")
+    "Não foi possível gerar explicação no momento. Tente novamente mais tarde."
+  end
+
   def simulation_params
-    params.require(:simulation).permit(
+    raw_params = params.require(:simulation).permit(
       :city_id, :energy_company_id, :area_available,
       :simulate_solar_batch, :simulate_wind_batch,
       :panel_quantity, :turbine_quantity,
-      :estimated_consumption_kwh_year
+      :estimated_consumption_kwh_year,
+      :cost_per_panel, :cost_per_turbine
     )
+
+    raw_params[:cost_per_panel] = parse_currency(raw_params[:cost_per_panel]) if raw_params[:cost_per_panel].present?
+    raw_params[:cost_per_turbine] = parse_currency(raw_params[:cost_per_turbine]) if raw_params[:cost_per_turbine].present?
+
+    raw_params
+  end
+
+  def parse_currency(value)
+    value.gsub(/[^\d,]/, '').gsub(',', '.').to_f
   end
 
   def set_result_data
@@ -188,7 +259,9 @@ class SimulationsController < ApplicationController
 
     @wind_indicators = {
       avg_wind_speed: @simulation.avg_wind_speed,
-      dominant_wind_direction: @simulation.dominant_wind_direction
+      dominant_wind_direction: @simulation.dominant_wind_direction,
+      payback_years: @simulation.wind_payback_years,
+      economic_return_5y: @simulation.wind_return_5y
     }
   end
 end

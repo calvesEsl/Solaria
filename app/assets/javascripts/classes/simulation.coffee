@@ -7,6 +7,8 @@ class Simulation.Form
       data: ->
         solarBatch: false
         windBatch: false
+        costPerPanel: ''
+        costPerTurbine: ''
       mounted: ->
         form = document.querySelector('form')
 
@@ -24,6 +26,14 @@ class Simulation.Form
             setTimeout ->
               el.classList.add('visible')
             , i * 150
+
+      methods:
+        formatCurrency: (field) ->
+          value = @[field]
+          value = value.toString().replace(/[^\d]/g, '')
+          value = (parseFloat(value) / 100).toFixed(2)
+          value = value.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+          @[field] = "R$ #{value}"
 
       document.addEventListener 'DOMContentLoaded', ->
         button = document.querySelector('.simular-btn')

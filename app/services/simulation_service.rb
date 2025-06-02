@@ -6,6 +6,9 @@ class SimulationService
   ONECALL_URL   = 'https://api.openweathermap.org/data/3.0/onecall'
   SOLAR_URL     = 'https://api.openweathermap.org/energy/1.0/solar/data'
 
+  COST_PER_PANEL_DEFAULT   = 3500.0
+  COST_PER_TURBINE_DEFAULT = 12000.0
+
   def initialize(simulation)
     @simulation = simulation
     @lat        = simulation.city.latitude
@@ -22,7 +25,7 @@ class SimulationService
     wind_result  = calculate_wind(wind_data)
 
     solar_indicators = calculate_solar_indicators(solar_result, wind_data)
-    wind_indicators  = calculate_wind_indicators(wind_data)
+    wind_indicators  = calculate_wind_indicators(wind_data, wind_result)
 
     better = solar_result[:estimated_savings] > wind_result[:estimated_savings] ? 'Solar' : 'Wind'
 
@@ -32,8 +35,16 @@ class SimulationService
     {
       solar: solar_result,
       wind: wind_result,
-      better_option: better
-    }.merge(solar_indicators).merge(wind_indicators)
+      better_option: better,
+      payback_years: solar_indicators[:payback_years],         # solar
+      economic_return_5y: solar_indicators[:economic_return_5y], # solar
+      wind_payback_years: wind_indicators[:wind_payback_years], # eólica
+      wind_return_5y: wind_indicators[:wind_return_5y]          # eólica
+    }.merge(
+      solar_indicators.except(:payback_years, :economic_return_5y)
+    ).merge(
+      wind_indicators.except(:wind_payback_years, :wind_return_5y)
+    )
   end
 
   private
@@ -128,20 +139,29 @@ class SimulationService
     estimated_savings = solar_result[:estimated_savings]
     co2_saved_kg = (solar_result[:annual_generation_kwh] * 0.084).round(2)
 
+    cost_per_panel = @simulation.cost_per_panel || COST_PER_PANEL_DEFAULT
+    investment_cost = solar_result[:panels] * cost_per_panel
+
     {
       solar_peak_days: 220,
       uv_index_avg: wind_data.dig('current', 'uvi').to_f,
       cloud_cover_avg: wind_data.dig('current', 'clouds').to_f,
       co2_saved_kg: co2_saved_kg,
-      payback_years: (estimated_savings > 0 ? (@area * 150 / estimated_savings).round(1) : nil),
+      payback_years: (estimated_savings > 0 ? (investment_cost / estimated_savings).round(1) : nil),
       economic_return_5y: (estimated_savings * 5).round(2)
     }
   end
 
-  def calculate_wind_indicators(wind_data)
+  def calculate_wind_indicators(wind_data, wind_result)
+    estimated_savings = wind_result[:estimated_savings]
+    cost_per_turbine = @simulation.cost_per_turbine || COST_PER_TURBINE_DEFAULT
+    investment_cost = wind_result[:turbines] * cost_per_turbine
+
     {
       avg_wind_speed: wind_data.dig('current', 'wind_speed').to_f,
-      dominant_wind_direction: wind_data.dig('current', 'wind_deg')
+      dominant_wind_direction: wind_data.dig('current', 'wind_deg'),
+      wind_payback_years: (estimated_savings > 0 ? (investment_cost / estimated_savings).round(1) : nil),
+      wind_return_5y: (estimated_savings * 5).round(2)
     }
   end
 end

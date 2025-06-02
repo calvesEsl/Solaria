@@ -1,0 +1,287 @@
+doctype html
+html
+  head
+    title Planos - Solaria
+    meta charset="utf-8"
+    meta name="viewport" content="width=device-width, initial-scale=1"
+
+    style
+      | body {
+      |   font-family: 'Helvetica Neue', sans-serif;
+      |   background-color: #f9f9f9;
+      |   margin: 0;
+      |   padding: 0;
+      | }
+      | h1 {
+      |   font-size: 2.2rem;
+      |   text-align: center;
+      |   margin-top: 2rem;
+      |   color: #333;
+      | }
+      | p.subtitle {
+      |   text-align: center;
+      |   margin-bottom: 2rem;
+      |   color: #777;
+      |   font-size: 1rem;
+      | }
+      | .plans-container {
+      |   display: flex;
+      |   gap: 2rem;
+      |   justify-content: center;
+      |   padding: 3rem 1rem;
+      |   flex-wrap: wrap;
+      |   background: #fff;
+      |   border-radius: 2rem;
+      |   margin: 2rem;
+      |   box-shadow: 0 6px 24px rgba(255, 122, 0, 0.08);
+      | }
+      | .plan-card {
+      |   background: #fff;
+      |   border: 2px solid #ffe6cc;
+      |   border-radius: 1.5rem;
+      |   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+      |   padding: 2rem;
+      |   width: 360px;
+      |   display: flex;
+      |   flex-direction: column;
+      |   justify-content: space-between;
+      |   transition: transform 0.3s ease;
+      |   position: relative;
+      | }
+      | .plan-card:hover {
+      |   transform: translateY(-6px);
+      | }
+      | .badge-recommended {
+      |   background-color: #ff7a00;
+      |   color: white;
+      |   font-size: 0.75rem;
+      |   font-weight: bold;
+      |   padding: 0.25rem 0.75rem;
+      |   border-radius: 1rem;
+      |   display: inline-block;
+      |   position: absolute;
+      |   top: -10px;
+      |   right: -10px;
+      | }
+      | .plan-title {
+      |   font-size: 1.6rem;
+      |   font-weight: 700;
+      |   color: #ff7a00;
+      |   margin-bottom: 0.5rem;
+      | }
+      | .plan-description {
+      |   font-size: 1rem;
+      |   color: #555;
+      |   margin-bottom: 1.2rem;
+      |   min-height: 48px;
+      | }
+      | .features {
+      |   list-style: none;
+      |   padding: 0;
+      |   margin-bottom: 2rem;
+      | }
+      | .features li {
+      |   font-size: 0.95rem;
+      |   margin-bottom: 0.75rem;
+      |   color: #444;
+      |   display: flex;
+      |   align-items: center;
+      | }
+      | .icon {
+      |   font-weight: bold;
+      |   font-size: 1.1rem;
+      |   margin-right: 0.5rem;
+      |   color: #ff7a00;
+      | }
+      | .icon.disabled {
+      |   color: #ccc;
+      | }
+      | .subscribe-container {
+      |   text-align: center;
+      |   margin-top: auto;
+      | }
+      | .subscribe-btn {
+      |   background-color: #ff7a00;
+      |   color: #fff;
+      |   border: none;
+      |   padding: 0.8rem 1.8rem;
+      |   border-radius: 0.75rem;
+      |   font-size: 1rem;
+      |   cursor: pointer;
+      |   transition: background-color 0.3s ease;
+      | }
+      | .subscribe-btn:hover {
+      |   background-color: #e96e00;
+      | }
+      | .section-compare {
+      |   max-width: 960px;
+      |   margin: 3rem auto;
+      |   padding: 2rem;
+      |   background: #fff;
+      |   border-radius: 1rem;
+      |   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      | }
+      | .compare-table {
+      |   width: 100%;
+      |   border-collapse: collapse;
+      |   text-align: center;
+      | }
+      | .compare-table th, .compare-table td {
+      |   padding: 1rem;
+      |   border: 1px solid #f0f0f0;
+      | }
+      | .compare-table th {
+      |   background: #fff3e6;
+      |   color: #ff7a00;
+      |   font-weight: 600;
+      | }
+      | .compare-table td {
+      |   font-size: 0.95rem;
+      | }
+      | .section-testimonials {
+      |   background: #fffefb;
+      |   padding: 2rem;
+      |   text-align: center;
+      | }
+      | .section-testimonials h2 {
+      |   color: #ff7a00;
+      |   font-size: 1.8rem;
+      |   margin-bottom: 1rem;
+      | }
+      | .testimonial {
+      |   font-style: italic;
+      |   color: #444;
+      |   margin-bottom: 1rem;
+      | }
+      | .section-faqs {
+      |   max-width: 960px;
+      |   margin: 3rem auto;
+      |   padding: 2rem;
+      |   background: #fff;
+      |   border-radius: 1rem;
+      |   box-shadow: 0 4px 16px rgba(255, 122, 0, 0.05);
+      | }
+      | .section-faqs h2 {
+      |   text-align: center;
+      |   color: #ff7a00;
+      |   font-size: 1.8rem;
+      |   margin-bottom: 1rem;
+      | }
+      | details {
+      |   background: #fff7f0;
+      |   border-radius: 0.75rem;
+      |   margin-bottom: 1rem;
+      |   padding: 1rem;
+      |   cursor: pointer;
+      |   transition: all 0.3s ease;
+      | }
+      | details[open] {
+      |   box-shadow: 0 0 0 2px #ff7a00;
+      | }
+      | summary {
+      |   font-weight: bold;
+      |   color: #444;
+      |   outline: none;
+      |   font-size: 1rem;
+      | }
+      | details p {
+      |   margin-top: 0.75rem;
+      |   color: #666;
+      |   font-size: 0.95rem;
+      | }
+
+  body
+    h1 Escolha o plano ideal para você
+    p.subtitle Compare os recursos e comece sua jornada com energia renovável inteligente
+
+    .plans-container#plans
+      - @plans.each do |plan|
+        - is_premium = plan[:name] == "Plano Premium"
+        - is_basic = plan[:name] == "Plano Básico"
+        - is_free = plan[:name] == "Plano Gratuito"
+        - recommended = is_premium
+
+        .plan-card
+          - if recommended
+            .badge-recommended Mais Popular
+
+          .plan-title = plan[:name]
+          .plan-description = plan[:description]
+
+          ul.features
+            li
+              span.icon ✔
+              | Acesso a simulações
+            li
+              span.icon ✔
+              | Suporte por e-mail
+            li
+              span class=(is_premium || is_basic ? "icon" : "icon disabled") = is_premium || is_basic ? "✔" : "✖"
+              | Histórico de simulações
+            li
+              span class=(is_premium ? "icon" : "icon disabled") = is_premium ? "✔" : "✖"
+              | Importação de planilhas (.xls)
+            li
+              span class=(is_premium ? "icon" : "icon disabled") = is_premium ? "✔" : "✖"
+              | Dashboards com insights estratégicos
+            li
+              span class=(is_free ? "icon" : "icon disabled") = is_free ? "✔" : "✖"
+              | Até 3 simulações por semana
+
+          - unless is_free
+            .subscribe-container
+              = form_with url: checkout_create_path(price_id: plan[:price_id]), method: :post do
+                button.subscribe-btn Assinar
+
+    .section-compare
+      h2 Comparativo dos Planos
+      table.compare-table
+        thead
+          tr
+            th Recurso
+            th Gratuito
+            th Básico
+            th Premium
+        tbody
+          tr
+            td Acesso a simulações
+            td ✔
+            td ✔
+            td ✔
+          tr
+            td Suporte por e-mail
+            td ✔
+            td ✔
+            td ✔
+          tr
+            td Histórico de simulações
+            td ✖
+            td ✔
+            td ✔
+          tr
+            td Importação de planilhas
+            td ✖
+            td ✖
+            td ✔
+          tr
+            td Dashboards
+            td ✖
+            td ✖
+            td ✔
+
+    .section-testimonials
+      h2 O que nossos usuários dizem
+      p.testimonial "Com o Solaria, consegui reduzir mais de 40% da minha conta de energia."
+      p.testimonial "Plataforma intuitiva, suporte excelente. Recomendo a todos!"
+
+    .section-faqs
+      h2 Perguntas Frequentes
+      details
+        summary Posso mudar de plano depois?
+        p Claro! Você pode fazer upgrade ou downgrade a qualquer momento.
+      details
+        summary Tem contrato de fidelidade?
+        p Não. Você pode cancelar quando quiser, sem taxas extras.
+      details
+        summary Como funciona o pagamento?
+        p O pagamento é mensal via cartão de crédito com segurança via Stripe.

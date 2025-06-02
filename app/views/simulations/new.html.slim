@@ -1,4 +1,4 @@
-= content_for :javascripts do 
+= content_for :javascripts do
   javascript:
     document.addEventListener('DOMContentLoaded', function() {
       new Simulation.Form('#simulation-form')
@@ -40,6 +40,17 @@
                 i.fas.fa-circle-question.text-muted.ms-1(data-bs-toggle="tooltip" title="Informe o total de energia consumida por ano em quilowatt-hora.")
 
               = f.number_field :estimated_consumption_kwh_year, step: 0.10, class: 'form-control'
+
+          .row
+            .col-md-6.mb-4
+              = f.label :cost_per_panel, class: 'form-label fw-semibold'
+                | Custo por painél (R$)
+              = f.text_field :cost_per_panel, class: 'form-control', 'v-model': 'costPerPanel', '@input': 'formatCurrency("costPerPanel")'
+
+            .col-md-6.mb-4
+              = f.label :cost_per_turbine, class: 'form-label fw-semibold'
+                | Custo por Turbina Eólica (R$)
+              = f.text_field :cost_per_turbine, class: 'form-control', 'v-model': 'costPerTurbine', '@input': 'formatCurrency("costPerTurbine")'
 
           .row
             .col-md-6.mb-4

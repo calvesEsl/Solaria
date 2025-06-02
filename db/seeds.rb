@@ -1,10 +1,10 @@
 require 'csv'
 
-puts "Limpando dados..."
+puts 'Limpando dados...'
 City.delete_all
 State.delete_all
 
-puts "Importando Estados..."
+puts 'Importando Estados...'
 states = {}
 CSV.foreach(Rails.root.join('db/csv/estados.csv'), headers: true) do |row|
   state = State.create!(
@@ -18,7 +18,7 @@ CSV.foreach(Rails.root.join('db/csv/estados.csv'), headers: true) do |row|
   states[row['codigo_uf']] = state
 end
 
-puts "Importando Cidades..."
+puts 'Importando Cidades...'
 CSV.foreach(Rails.root.join('db/csv/municipios.csv'), headers: true) do |row|
   state = states[row['codigo_uf']]
   next unless state
@@ -32,8 +32,23 @@ CSV.foreach(Rails.root.join('db/csv/municipios.csv'), headers: true) do |row|
     siafi_id: row['siafi_id'],
     ddd: row['ddd'],
     timezone: row['fuso_horario'],
-    state: state
+    state:
   )
 end
 
-puts "✅ Dados importados com sucesso!"
+puts '✅ Dados importados com sucesso!'
+
+Plan.create!([
+               {
+                 name: 'Plano Básico',
+                 description: 'Ideal para testes e uso pessoal',
+                 price_cents: 990,
+                 stripe_price_id: 'price_1P0xxxxxx'
+               },
+               {
+                 name: 'Plano Profissional',
+                 description: 'Para empresas e uso em produção',
+                 price_cents: 2990,
+                 stripe_price_id: 'price_1P0yyyyyy'
+               }
+             ])

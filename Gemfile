@@ -33,6 +33,11 @@ gem 'kaminari-bootstrap'
 gem "chartkick"
 gem "groupdate"
 gem 'axlsx_rails'
+gem 'axlsx'
+
+gem 'stripe'
+
+gem 'dotenv-rails', groups: [:development, :test]
 
 require 'debug'
 
@@ -75,3 +80,8 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem 'ruby-openai', '~> 5.0'
+gem 'rtesseract'
+gem 'mini_magick'
+
