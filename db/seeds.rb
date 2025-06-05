@@ -1,8 +1,11 @@
 require 'csv'
 
 puts 'Limpando dados...'
+Simulation.delete_all
+Person.delete_all
 City.delete_all
 State.delete_all
+
 
 puts 'Importando Estados...'
 states = {}

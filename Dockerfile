@@ -4,6 +4,12 @@
 ARG RUBY_VERSION=3.2.2
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
 
+RUN apt-get update && apt-get install -y \
+  tesseract-ocr \
+  libtesseract-dev \
+  imagemagick \
+  && rm -rf /var/lib/apt/lists/*
+
 # Rails app lives here
 WORKDIR /rails
 
@@ -12,7 +18,6 @@ ENV RAILS_ENV="development" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development"
-
 
 # Throw-away build stage to reduce size of final image
 FROM base as build
@@ -30,19 +35,37 @@ RUN bundle install && \
 # Copy application code
 COPY . .
 
+
+# Copy application code
+COPY . .
+
+# Precompile bootsnap code for faster boot times
+RUN bundle exec bootsnap precompile app/ lib/
+
+# MIGRATIONS, SEEDS E ASSETS
+RUN bundle exec rails db:migrate && \
+    bundle exec rails db:seed && \
+    bundle exec rake assets:precompile && \
+    bundle exec rake assets:clean
+
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
-
 # Final stage for app image
 FROM base
 
-# Install packages needed for deployment
+# Install packages needed for deployment (including tesseract again)
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libvips postgresql-client && \
+    apt-get install --no-install-recommends -y \
+      curl \
+      libvips \
+      postgresql-client \
+      tesseract-ocr \
+      libtesseract-dev \
+      imagemagick && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application
