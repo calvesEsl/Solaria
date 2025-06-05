@@ -1,0 +1,28 @@
+.row.g-2.align-items-end.border-bottom.pb-3.mb-3
+  = form_with url: energy_companies_path, method: :get, local: true, class: 'd-flex flex-wrap align-items-end w-100 gap-2', html: { id: 'energy-company-filters' } do |f|
+
+    .form-group
+      = f.label :name, 'Nome', class: 'form-label small mb-1'
+      = f.text_field :name,
+                     class: 'form-control form-control-sm',
+                     style: 'width: 200px; height: 32px;',
+                     placeholder: 'Digite o nome'
+
+    .form-group
+      = f.label :price_per_kwh, 'Preço por kWh', class: 'form-label small mb-1'
+      = f.text_field :price_per_kwh,
+                     class: 'form-control form-control-sm',
+                     style: 'width: 200px; height: 32px;',
+                     placeholder: 'Ex: 0.523'
+
+    .form-group
+      = f.label :city_id, 'Cidade', class: 'form-label small mb-1'
+      = f.collection_select :city_id,
+                            City.order(:name), :id, :name,
+                            { prompt: 'Selecione a cidade' },
+                            class: 'form-control form-control-sm',
+                            style: 'width: 200px; height: 32px;'
+
+    .ms-auto
+      button.btn.btn-orange.btn-sm.rounded.px-3.py-1.d-flex.align-items-center type="submit" title="Buscar"
+        i.fa.fa-search.me-1

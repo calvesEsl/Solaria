@@ -17,6 +17,38 @@ html
     = javascript_include_tag "https://unpkg.com/v-money@0.8.1/dist/v-money.min.js"
     = javascript_include_tag "application"
 
+    style
+      |
+        .floating-support-btn {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          z-index: 9999;
+          background-color: #ff7a00;
+          color: white;
+          font-size: 1.75rem;
+          padding: 12px 16px;
+          border-radius: 50%;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+          text-decoration: none;
+          transition: background-color 0.3s, transform 0.3s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: floatEmoji 3s ease-in-out infinite;
+        }
+
+        .floating-support-btn:hover {
+          background-color: #e96e00;
+          transform: scale(1.1);
+        }
+
+        @keyframes floatEmoji {
+          0%   { transform: translateY(0); }
+          50%  { transform: translateY(-6px); }
+          100% { transform: translateY(0); }
+        }
+
   body
     = render 'shared/navbar'
 
@@ -32,6 +64,8 @@ html
       = yield
       = yield :javascripts
 
+    a.floating-support-btn href="/assistente" title="Falar com a Assistente"
+      span 💬
+
     footer.footer-custom.mt-5
       | © #{Time.now.year} Solaria. Todos os direitos reservados.
-

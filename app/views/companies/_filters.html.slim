@@ -1,0 +1,13 @@
+.row.g-2.align-items-end.border-bottom.pb-3.mb-3
+  = form_with url: companies_path, method: :get, local: true, class: 'd-flex flex-wrap align-items-end w-100 gap-2', html: { id: 'company-filters' } do |f|
+
+    .form-group
+      = f.label :name, 'Nome', class: 'form-label small mb-1'
+      = f.text_field :name,
+                     class: 'form-control form-control-sm',
+                     style: 'width: 200px; height: 32px;',
+                     placeholder: 'Digite o nome'
+
+    .ms-auto
+      button.btn.btn-orange.btn-sm.rounded.px-3.py-1.d-flex.align-items-center type="submit" title="Buscar"
+        i.fa.fa-search.me-1

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_02_014020) do
+ActiveRecord::Schema[7.1].define(version: 2025_06_04_170552) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -62,7 +62,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_02_014020) do
     t.decimal "price_per_kwh", precision: 6, scale: 4
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "city"
+    t.bigint "city_id"
+    t.index ["city_id"], name: "index_energy_companies_on_city_id"
   end
 
   create_table "people", force: :cascade do |t|
@@ -77,7 +78,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_02_014020) do
     t.string "endereco"
     t.decimal "calculation_area", precision: 10, scale: 2
     t.string "type"
+    t.bigint "user_id", null: false
     t.index ["city_id"], name: "index_people_on_city_id"
+    t.index ["user_id"], name: "index_people_on_user_id"
   end
 
   create_table "plans", force: :cascade do |t|
@@ -116,7 +119,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_02_014020) do
     t.decimal "cost_per_turbine"
     t.decimal "wind_return_5y"
     t.float "wind_payback_years"
+    t.bigint "company_id"
     t.index ["city_id"], name: "index_simulations_on_city_id"
+    t.index ["company_id"], name: "index_simulations_on_company_id"
     t.index ["energy_company_id"], name: "index_simulations_on_energy_company_id"
   end
 
@@ -148,7 +153,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_02_014020) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cities", "states"
+  add_foreign_key "energy_companies", "cities"
   add_foreign_key "people", "cities"
+  add_foreign_key "people", "users"
   add_foreign_key "simulations", "cities"
   add_foreign_key "simulations", "energy_companies"
+  add_foreign_key "simulations", "people", column: "company_id"
 end

@@ -1,21 +1,30 @@
-h1 Relatórios Gerados
+= content_for :javascripts do
+  javascript:
+    document.addEventListener('DOMContentLoaded', function () {
+      $('#filter_city_id').select2();
+    });
 
-table.table.table-bordered.table-striped
-  thead
-    tr
-      th ID
-      th Cidade
-      th Concessionária
-      th Data
-      th Ações
-  tbody
-    - @simulations.each do |sim|
-      tr
-        td = sim.id
-        td = sim.city.name
-        td = sim.energy_company.name
-        td = l sim.created_at, format: :short
-        td
-          = link_to 'Ver', simulation_path(sim), class: 'btn btn-sm btn-primary'
-          = link_to 'Excel', simulation_path(sim, format: :xlsx), class: 'btn btn-sm btn-success ml-2'
-          = link_to 'Exportar Power BI', export_power_bi_simulation_path(simulation), class: 'btn btn-sm btn-outline-primary'
+.container-index
+  .d-flex.justify-content-between.align-items-center.mb-3
+    h4.mb-0.text-dark Relatórios Gerados
+    = link_to '+ Nova simulação', new_simulation_path, class: 'btn btn-orange-pill btn-sm shadow-sm'
+
+  .filter-wrapper.shadow-sm.bg-white.rounded.p-3.mb-4
+    = form_with url: simulations_path, method: :get, local: true, class: 'd-flex flex-wrap align-items-end gap-2' do |f|
+      .form-group
+        = label_tag :city_id, 'Cidade', class: 'form-label small mb-1'
+        = select_tag :city_id,
+            options_from_collection_for_select(City.order(:name), :id, :name, params[:city_id]),
+            prompt: 'Selecione a cidade',
+            class: 'form-select form-select-sm',
+            style: 'width: 240px;',
+            id: 'filter_city_id'
+
+      .ms-auto
+        button.btn.btn-orange.btn-sm.rounded.px-3.py-1.d-flex.align-items-center type="submit" title="Buscar"
+          i.fa.fa-search.me-1
+
+= modern_paginated_table(@simulations,
+  headers: simulation_index_headers,
+  fields: simulation_index_fields,
+  actions: simulation_index_actions)

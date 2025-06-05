@@ -6,8 +6,8 @@ class SimulationService
   ONECALL_URL   = 'https://api.openweathermap.org/data/3.0/onecall'
   SOLAR_URL     = 'https://api.openweathermap.org/energy/1.0/solar/data'
 
-  COST_PER_PANEL_DEFAULT   = 3500.0
-  COST_PER_TURBINE_DEFAULT = 12000.0
+  # COST_PER_PANEL_DEFAULT   = 3500.0
+  # COST_PER_TURBINE_DEFAULT = 12000.0
 
   def initialize(simulation)
     @simulation = simulation
@@ -83,11 +83,10 @@ class SimulationService
 
   def calculate_solar(data)
     radiation = data.dig('irradiance', 'daily', 0, 'clear_sky', 'ghi').to_f / 1000.0
+    radiation = 5.2 if radiation.zero?
 
-    if radiation.zero?
-      puts '[FALLBACK] Radiação não encontrada — usando média nacional 5.2 kWh/m²/dia'
-      radiation = 5.2
-    end
+    panel_power_kw = 0.33
+    efficiency = 0.8
 
     panels = if @simulation.simulate_solar_batch
                @simulation.panel_quantity.presence || (@area / 1.7).floor
@@ -95,7 +94,7 @@ class SimulationService
                1
              end
 
-    annual_generation = (radiation * 365 * panels * 0.8).round(2)
+    annual_generation = (radiation * 365 * panels * panel_power_kw * efficiency).round(2)
     estimated_savings = (annual_generation * @price_kwh).round(2)
 
     {
@@ -107,29 +106,24 @@ class SimulationService
 
   def calculate_wind(data)
     wind_speed = data.dig('current', 'wind_speed').to_f
+    return { turbines: 0, annual_generation_kwh: 0, estimated_savings: 0.0 } if wind_speed.zero?
 
-    if wind_speed.zero?
-      puts '[SIMULAÇÃO] wind_speed ausente ou igual a zero — ignorando geração eólica'
-      return {
-        turbines: 0,
-        annual_generation_kwh: 0,
-        estimated_savings: 0.0
-      }
-    end
+    installed_capacity_kw = 5.0 # Turbina residencial de 5 kW
+    cost_per_turbine = @simulation.cost_per_turbine || COST_PER_TURBINE_DEFAULT
 
-    wind_energy = (0.5 * wind_speed**3).round(2)
+    capacity_factor = case wind_speed
+                      when 0...3 then 0.10
+                      when 3...4 then 0.20
+                      when 4...5 then 0.30
+                      when 5...6 then 0.35
+                      else 0.40
+                      end
 
-    turbines = if @simulation.simulate_wind_batch
-                 @simulation.turbine_quantity.presence || (@area / 3.0).floor
-               else
-                 1
-               end
-
-    annual_generation = (wind_energy * 8760 * turbines * 0.4).round(2)
+    annual_generation = (installed_capacity_kw * 8760 * capacity_factor).round(2)
     estimated_savings = (annual_generation * @price_kwh).round(2)
 
     {
-      turbines: turbines,
+      turbines: 1,
       annual_generation_kwh: annual_generation,
       estimated_savings: estimated_savings
     }

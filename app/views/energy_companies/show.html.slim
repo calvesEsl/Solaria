@@ -1,8 +1,1 @@
-h1 = @energy_company.name
-
-p Cidade: #{@energy_company.city}
-p Preço por kWh: #{@energy_company.price_per_kwh} R$
-
-- if @energy_company.bill_image.attached?
-  p Conta Anexada:
-  = image_tag @energy_company.bill_image.variant(resize_to_limit: [500, 500])
+- redirect_to edit_energy_company_path(@energy_company)

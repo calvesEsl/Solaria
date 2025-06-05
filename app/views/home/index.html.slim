@@ -17,6 +17,13 @@ html
           background-color: #f5f5f5;
         }
 
+        #co2-counter {
+          font-size: 3rem;
+          font-weight: 700;
+          color: #ff3300;
+          animation: float 3s ease-in-out infinite;
+        }
+
         .hero-carousel {
           background: linear-gradient(135deg, #ff6600, #ff8533);
           color: white;
@@ -73,10 +80,15 @@ html
         }
 
         .feature-icon {
-          font-size: 2.5rem;
+          font-size: 2rem;
           color: #ff6600;
-          margin-bottom: 10px;
+          background-color: #fff0e6;
+          padding: 15px;
+          border-radius: 50%;
+          margin-bottom: 16px;
+          box-shadow: 0 0 8px rgba(0,0,0,0.1);
         }
+
 
         #sobre h2 {
           font-weight: 700;
@@ -137,15 +149,7 @@ html
             h1 Bem-vindo à Plataforma Solaria
             p.subtext-highlight Explore o futuro da energia limpa e inteligente.
             p Conheça seu potencial energético sustentável com nosso simulador inteligente e relatórios analíticos completos.
-            = link_to "Começar Simulação", "#simulador", class: "cta-button mt-3"
-
-        .carousel-item.hero-carousel
-          .container.d-flex.flex-column.align-items-center.text-center
-            i.fas.fa-chalkboard-teacher.fa-4x.mb-3(style="color: white; animation: float 3s ease-in-out infinite;")
-            h1 Descubra como usar o Solaria
-            p.subtext-highlight Simples, rápido e interativo.
-            p Acompanhe o tutorial passo a passo e aproveite todos os recursos da plataforma.
-            = link_to "Ver Tutorial", "#tutorial", class: "cta-button mt-3"
+            = link_to "Começar Simulação", simulations_path, class: "cta-button mt-3"
 
         .carousel-item.hero-carousel
           .container.d-flex.flex-column.align-items-center.text-center
@@ -153,13 +157,22 @@ html
             h1 Nossos Planos e Benefícios
             p.subtext-highlight Soluções acessíveis para empresas.
             p Veja como a Solaria pode transformar sua visão de consumo energético com soluções acessíveis.
-            = link_to "Conferir Planos", "#planos", class: "cta-button mt-3"
+            = link_to "Conferir Planos", plans_path, class: "cta-button mt-3"
 
       button.carousel-control-prev(type="button" data-bs-target="#mainCarousel" data-bs-slide="prev")
         span.carousel-control-prev-icon(aria-hidden="true")
       button.carousel-control-next(type="button" data-bs-target="#mainCarousel" data-bs-slide="next")
         span.carousel-control-next-icon(aria-hidden="true")
 
+    .section.bg-white.py-5
+      .container.text-center
+        h2.text-orange.mb-4 Emissão de CO₂ no Brasil Hoje
+
+        .row.justify-content-center
+          .col-md-8
+            h3.display-4#co2-counter 0
+            p.text-muted.mb-0 Estimativa em tempo real baseada na média nacional
+            small.text-secondary Produção total diária: 4.300.000.000 kg de CO₂
 
     .container.mt-5.mb-5
       .row.text-center
@@ -195,3 +208,27 @@ html
             li Altitude e zona climática
           p.text-muted.mt-3
             | Com base nesses dados, o sistema analisa automaticamente as condições ideais para instalação de fontes de energia renovável. Atendemos 100% do território nacional, com inteligência ambiental localizada.
+
+javascript:
+  document.addEventListener("DOMContentLoaded", function () {
+    const counter = document.getElementById("co2-counter");
+    if (!counter) return;
+
+    const dailyCO2 = 4300000000;
+
+    function updateCO2Counter() {
+      const now = new Date();
+      const secondsSinceMidnight =
+        now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+      const secondsInDay = 24 * 60 * 60;
+      const progress = secondsSinceMidnight / secondsInDay;
+
+      const currentCO2 = Math.floor(dailyCO2 * progress);
+      counter.textContent = currentCO2.toLocaleString("pt-BR");
+    }
+
+    updateCO2Counter();
+    setInterval(updateCO2Counter, 1000);
+  });
+

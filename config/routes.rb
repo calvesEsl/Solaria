@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   resources :plans, only: [:index]
   # Define other routes if needed
   resources :people
-  resources :individuals
+  resource :individual, only: [:show, :edit, :update, :create]
   resources :companies
   resources :cities, only: [:index]
   resources :simulations do
