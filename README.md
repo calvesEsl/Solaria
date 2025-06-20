@@ -73,22 +73,7 @@ Planejamento contínuo de novas funcionalidades como:
 - Exportação de relatórios
 - Plano de assinatura com Stripe
 
----
-
-## Contribuição
-
-Pull requests são bem-vindos.  
-Para contribuições maiores, abra uma issue primeiro para discutir o que você gostaria de mudar.
-
----
-
 ## Licença
 
 Este projeto está licenciado sob a [MIT License](LICENSE).
 
----
-
-## Desenvolvido por
-
-Caio Matheus Teles  
-Engenheiro de Software | Sustentabilidade | IA aplicada
